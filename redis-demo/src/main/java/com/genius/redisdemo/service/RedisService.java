@@ -15,8 +15,7 @@ public class RedisService {
     }
 
     public void addArrayByKey(String key, List<String> values) {
-        //jedis.lpush(key, values.toArray(new String[0]));
-        jedis.lpush(key, "testValue");
+        jedis.lpush(key, values.toArray(String[]::new));
     }
 
     public void addElementToArray(String key, String value) {
