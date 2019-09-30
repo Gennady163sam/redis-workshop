@@ -2,8 +2,10 @@ package com.genius.redisdemo.service;
 
 import org.springframework.stereotype.Controller;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -22,6 +24,16 @@ public class RedisService {
         jedis.sadd(key, value);
     }
 
+    public void changeObjectAttribute(String key, String fieldKey, String fieldValue) {
+        jedis.hset(key, fieldKey, fieldValue);
+    }
+
+    public void addValueInTransaction() {
+        Transaction transaction = jedis.multi();
+        // add some actions
+        transaction.exec();
+    }
+
     public String value(String key) {
         return jedis.get(key);
     }
@@ -32,5 +44,9 @@ public class RedisService {
 
     public Set<String> set(String key) {
         return jedis.smembers(key);
+    }
+
+    public Map<String, String> object(String key) {
+        return jedis.hgetAll(key);
     }
 }

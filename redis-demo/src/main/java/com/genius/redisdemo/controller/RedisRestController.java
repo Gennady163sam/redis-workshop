@@ -1,13 +1,11 @@
 package com.genius.redisdemo.controller;
 
+import com.genius.redisdemo.domain.Car;
 import com.genius.redisdemo.domain.ListObject;
 import com.genius.redisdemo.domain.SimpleObject;
 import com.genius.redisdemo.service.RedisService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -36,6 +34,18 @@ public class RedisRestController {
     public ResponseEntity<Set<String>> addValueToList(@RequestBody SimpleObject persistEntity) {
         redisService.addElementToArray(persistEntity.getKey(), persistEntity.getValue());
         return ResponseEntity.ok(redisService.set(persistEntity.getKey()));
+    }
+
+    @PostMapping("/cars")
+    public ResponseEntity<Car> addCar(@RequestBody Car car) {
+        car.asMap()
+                .forEach((key, value) -> redisService.changeObjectAttribute("car#" + car.getId(), key, String.valueOf(value)));
+        return ResponseEntity.ok(Car.fromMap(redisService.object("car#"+car.getId())));
+    }
+
+    @GetMapping("/car/{carId}")
+    public ResponseEntity<Car> addCar(@PathVariable Long carId) {
+        return ResponseEntity.ok(Car.fromMap(redisService.object("car#"+carId)));
     }
 
 }
